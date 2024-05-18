@@ -1,0 +1,39 @@
+/* Custom styles for the website */
+body {
+    padding-top: 56px;
+    background-color: #E0FBE2;
+}
+
+.navbar-nav .nav-link {
+    color: #fff;
+    transition: color 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ddd;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 1rem;
+}
+
+.card.zoom {
+    transition: transform 0.3s;
+}
+
+.card.zoom:hover {
+    transform: scale(1.05);
+}
+
+.pagination .page-link {
+    color: #000;
+}
+
+.pagination .page-link:hover {
+    color: #007bff;
+}

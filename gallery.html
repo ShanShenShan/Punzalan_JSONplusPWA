@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - User Photos</title>
+    <link rel="icon" type="image/x-icon" href="icon.png">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="gallery.html">Gallery</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">About</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <h1>Photo Gallery</h1>
+        <input type="text" id="searchPhoto" class="form-control mb-4" placeholder="Search by title...">
+        <div class="row" id="photo-gallery">
+            <!-- Photo gallery will be dynamically inserted here -->
+        </div>
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item" id="prev-page"><a class="page-link" href="#">Previous</a></li>
+                <li class="page-item" id="next-page"><a class="page-link" href="#">Next</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const photosPerPage = 30;
+        let allPhotos = [];
+
+        Promise.all([
+            fetch('https://jsonplaceholder.typicode.com/users').then(response => response.json()),
+            fetch('https://jsonplaceholder.typicode.com/photos').then(response => response.json())
+        ]).then(data => {
+            const users = data[0];
+            const photos = data[1];
+            allPhotos = photos;
+            displayPhotos(photos, currentPage);
+
+            const searchInput = document.getElementById('searchPhoto');
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase();
+                const filteredPhotos = photos.filter(photo => photo.title.toLowerCase().includes(query));
+                displayPhotos(filteredPhotos, 1);
+                currentPage = 1;
+            });
+
+            document.getElementById('prev-page').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayPhotos(allPhotos, currentPage);
+                }
+            });
+
+            document.getElementById('next-page').addEventListener('click', () => {
+                if (currentPage * photosPerPage < allPhotos.length) {
+                    currentPage++;
+                    displayPhotos(allPhotos, currentPage);
+                }
+            });
+        });
+
+        function displayPhotos(photos, page) {
+            const photoGallery = document.getElementById('photo-gallery');
+            photoGallery.innerHTML = '';
+
+            const start = (page - 1) * photosPerPage;
+            const end = page * photosPerPage;
+            const photosToShow = photos.slice(start, end);
+
+            photosToShow.forEach(photo => {
+                const photoCard = `
+                    <div class="col-md-4">
+                        <div class="card mb-4 zoom">
+                            <img src="${photo.thumbnailUrl}" class="card-img-top" alt="${photo.title}">
+                            <div class="card-body">
+                                <p class="card-text">${photo.title}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                photoGallery.innerHTML += photoCard;
+            });
+        }
+    </script>
+</body>
+</html>

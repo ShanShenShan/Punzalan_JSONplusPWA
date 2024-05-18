@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - User Information</title>
+    <link rel="icon" type="image/x-icon" href="icon.png">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+
+    <link rel="manifest" href="manifest.json" />
+    <!-- ios support -->
+    <link rel="apple-touch-icon" href="icon.png" />
+    <meta name="apple-mobile-web-app-status-bar" content="#db4938" />
+    <meta name="theme-color" content="#db4938" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="gallery.html">Gallery</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">About</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <h1>User Profiles</h1>
+        <input type="text" id="searchUser" class="form-control mb-4" placeholder="Search by name...">
+        <div class="row" id="user-cards">
+            <!-- user info sa template mag generate dito-->
+        </div>
+    </div>
+
+    <script>
+        fetch('https://jsonplaceholder.typicode.com/users')
+            .then(response => response.json())
+            .then(users => {
+                const userCardsContainer = document.getElementById('user-cards');
+                const searchInput = document.getElementById('searchUser');
+                
+                function displayUsers(filteredUsers) {
+                    userCardsContainer.innerHTML = '';
+                    filteredUsers.forEach(user => {
+                        const card = `
+                            <div class="col-md-4">
+                                <div class="card mb-4 zoom">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${user.name}</h5>
+                                        <p class="card-text">
+                                            <strong>Username:</strong> ${user.username}<br>
+                                            <strong>Email:</strong> ${user.email}<br>
+                                            <strong>Address:</strong> ${user.address.street}, ${user.address.suite}, ${user.address.city}, ${user.address.zipcode}<br>
+                                            <strong>Phone:</strong> ${user.phone}<br>
+                                            <strong>Website:</strong> ${user.website}<br>
+                                            <strong>Company:</strong> ${user.company.name}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        userCardsContainer.innerHTML += card;
+                    });
+                }
+
+                displayUsers(users);
+
+                searchInput.addEventListener('input', () => {
+                    const query = searchInput.value.toLowerCase();
+                    const filteredUsers = users.filter(user => user.name.toLowerCase().includes(query));
+                    displayUsers(filteredUsers);
+                });
+            });
+
+            if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker
+      .register("/serviceWorker.js")
+      .then(res => console.log("service worker registered"))
+      .catch(err => console.log("service worker not registered", err))
+  })
+}
+    </script>
+</body>
+</html>
